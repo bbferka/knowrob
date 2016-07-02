@@ -144,11 +144,11 @@
 	    },
         {
             "text":"Inspect plate for objects on it",
-            "q":"detect(['inspect:plate'],'frame:5')."
+            "q":"detect(['obj-parts:plate'],'frame:5')."
         },
         {
             "text":"Inspect cup for objects on it",
-            "q":"detect(['inspect:cup'],'frame:5')."
+            "q":"detect(['obj-parts:cup'],'frame:5')."
         },
         {
             "text":"Find all objects that are drinks",
