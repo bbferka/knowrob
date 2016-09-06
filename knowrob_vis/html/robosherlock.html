@@ -131,12 +131,17 @@
           initClosed: false,
           // INNER-LAYOUT
           childOptions: {
-            center: {
+            north: {
               paneSelector: "#designator",
               minSize: 250
             },
+		
+            center: {
+              paneSelector: "#mjpeg1",
+              minSize: 150
+            },
             south: {
-              paneSelector: "#mjpeg",
+              paneSelector: "#mjpeg2",
               minSize: 150
             }
           }
@@ -182,9 +187,11 @@
   
     <div class="ui-layout-east">
       <div id="designator"></div>
-      <div id="mjpeg">
-	<img align=left src="http://localhost:8080/stream?topic=/RoboSherlock/result_image" height ="10%"></img>
-        <img align=left src="http://localhost:8080/stream?topic=/RoboSherlock/output_image" height="10%" ></img>
+      <div id="mjpeg1">
+        <img align=center src="http://localhost:8080/stream?topic=/RoboSherlock/output_image" height="100%" ></img>
+      </div>
+      <div id="mjpeg2">
+	<img align=center src="http://localhost:8080/stream?topic=/RoboSherlock/result_image" height ="100%"></img>
       </div>
     </div>
   
