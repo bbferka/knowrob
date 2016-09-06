@@ -1,10 +1,6 @@
 {
     "query": [
-        {
-            "q":"",
-            "text":"----- Initialize -----"
-        },
-		{
+	{
             "q":"register_ros_package(knowrob_rs_components).",
             "text":"Initialize Context"
         },
@@ -17,16 +13,7 @@
             "q":"perceptual_capabilities_on_robot('http://knowrob.org/kb/rs_components.owl#Perceive3DDepthCapability','http://knowrob.org/kb/PR2.owl#PR2Robot1'),!."            
         },
         {
-            "text":"Is the Jazz Robot capable of perceiving 3D depth data?",
-            "q":"perceptual_capabilities_on_robot('http://knowrob.org/kb/rs_components.owl#Perceive3DDepthCapability','http://knowrob.org/kb/pico.owl#jazz_robot1'),!."            
-        },
-        {
-            "text":"Can I run the Cluster3DGeometryAnnotator component of RoboSherlock on the Jazz Robot?",
-            "q":"action_feasible_on_robot(rs_components:'Cluster3DGeometryAnnotator',jazz:'jazz_robot1')."
-        },
-
-        {
-            "text":"What about the PR2?",
+            "text":"Can I run the Cluster3DGeometryAnnotator component of RoboSherlock on the PR2 Robot?",
             "q":"action_feasible_on_robot(rs_components:'Cluster3DGeometryAnnotator',pr2:'PR2Robot1')."
         },
         {   "text":"",
@@ -39,23 +26,23 @@
         },
         {
             "text":"What are the objects defined in the ontology?",
-            "q":"owl_subclass_of(Obj,rs_test_objects:'ObjectsToTest')."
+            "q":"owl_subclass_of(Obj,rs_objects:'KitchenObjects')."
         },
         {
             "text":"Are there any objects that can be container?",
-            "q":"owl_subclass_of(Obj,rs_test_objects:'ObjectsToTest'),owl_subclass_of(Obj,knowrob:'Container')."
+            "q":"owl_subclass_of(Obj,rs_objects:'KitchenObject'),owl_subclass_of(Obj,knowrob:'Container')."
         },
         {
             "text":"What about a drinks?",
-            "q":"owl_subclass_of(Obj,rs_test_objects:'ObjectsToTest'),owl_subclass_of(Obj,knowrob:'Drink')."
+            "q":"owl_subclass_of(Obj,rs_objects:'KitchenObject'),owl_subclass_of(Obj,knowrob:'Drink')."
         },
         {
             "text":"What are the properties defined for the PancakeMaker?",
-            "q":"predicates_for_object('http://knowrob.org/kb/rs_test_objects.owl#PancakeMaker',P)."
+            "q":"predicates_for_object('http://knowrob.org/kb/rs_objects.owl#PancakeMaker',P)."
         },
         {
             "text":"Show me all objects that can have a lid",
-            "q":"owl_subclass_of(Obj,knowrob:'HumanScaleObject'),class_properties(Obj,rs_components:'hasVisualProperty',rs_test_objects:'ObjectPartLid')."
+            "q":"owl_subclass_of(Obj,knowrob:'HumanScaleObject'),class_properties(Obj,rs_components:'hasVisualProperty',rs_objects:'ObjectPartLid')."
         },
         {
             "text":"",
@@ -67,7 +54,7 @@
         },
 	{
             "text":"Build a pipeline for the pancake maker.",
-            "q":"build_pipeline_for_object('http://knowrob.org/kb/rs_test_objects.owl#PancakeMaker',P)."
+            "q":"build_pipeline_for_object('http://knowrob.org/kb/rs_objects.owl#PancakeMaker',P)."
         },
 	{
 	    "text":"Build pipeline for predicates: shape,color, location.",
@@ -79,11 +66,11 @@
 	},
 	{
 	    "text":"Detect pancake if we have a Pancake maker",             		    
-	    "q":"detect_if_individual_present('http://knowrob.org/kb/rs_test_objects.owl#Pancake','http://knowrob.org/kb/rs_test_objects.owl#PancakeMaker',P)."	
+	    "q":"detect_if_individual_present('http://knowrob.org/kb/rs_objects.owl#Pancake','http://knowrob.org/kb/rs_objects.owl#PancakeMaker',P)."	
 	},
 	{
 	    "text":"Detect everything that a drink.",
-  	    "q":"build_pipeline_for_subclass_leafs('http://knowrob.org/kb/rs_test_objects.owl#Drink',Pipeline,Drink)."
+  	    "q":"build_pipeline_for_subclass_leafs('http://knowrob.org/kb/rs_objects.owl#Drink',Pipeline,Drink)."
 	},
 	{
 	    "text":" ",
