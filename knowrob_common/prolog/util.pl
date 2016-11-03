@@ -51,21 +51,53 @@
       extract_values/3,
       print_info/2,
       string_tokens/2,
+      prolog_pack_path/1,
+      prolog_pack_install/2,
       lists_equal/2,
       time_term/2,
       time_between/3,
+      time_between/2,
       time_later_then/2,
       time_earlier_then/2,
       current_time/1,
       property_name/2,
-      property_value/2
+      property_value/2,
+      path_delimiter/1,
+      path_concat/3,
+      path_split/2,
+      mkdir/1,
+      matrix_rotation/2,
+      matrix_translation/2,
+      matrix_translate/3,
+      matrix/3
 ]).
+
+current_time(T) :-
+  set_prolog_flag(float_format, '%.12g'),
+  get_time(T).
 
 % Use identity if first argument is a number
 time_term(Timepoint, Timepoint) :-
   number(Timepoint), !.
 
+time_term([Begin,End], [Begin,End]) :-
+  number(Begin), number(End), !.
+
+time_term([Begin], [Begin]) :-
+  number(Begin), !.
+
+time_term(Timeinterval, Interval) :-
+  atom(Timeinterval),
+  rdfs_individual_of(Timeinterval, knowrob:'TimeInterval'),
+  rdf_has(Timeinterval, knowrob:'startTime', Timepoint0),
+  time_term(Timepoint0, Begin),
+  (  rdf_has(Timeinterval, knowrob:'endTime', Timepoint1)
+  -> (time_term(Timepoint1, End), Interval=[Begin,End])
+  ;  Interval=[Begin]
+  ), !.
+
 time_term(Timepoint, Time) :-
+  atom(Timepoint),
   (  rdf_split_url(_, TimePointLocal, Timepoint),
      atom_concat('timepoint_', TimeAtom, TimePointLocal)
   -> term_to_atom(Time, TimeAtom)
@@ -78,11 +110,33 @@ time_term(Timepoint, Time) :-
 %% time_between(+T, +T0, +T1)
 % True iff T0 <= T <= T1
 %
+time_between(Timeinterval, T0, T1) :-
+  atom(Timeinterval),
+  rdfs_individual_of(Timeinterval, knowrob:'TimeInterval'),
+  time_term(Timeinterval , Interval),
+  time_between(Interval, T0, T1), !.
+
+time_between([T2,T3], T0, T1) :-
+  time_between(T2, T0, T1),
+  time_between(T3, T0, T1), !.
+
 time_between(T, T0, T1) :-
-  time_term(T0, T0_term),
-  time_term(T1, T1_term),
-  time_term(T , T_term),
-  T0_term =< T_term, T_term =< T1_term.
+  not(is_list(T)), 
+  time_earlier_then(T0, T),
+  time_earlier_then(T, T1).
+
+time_between(T, Timeinterval) :-
+  atom(Timeinterval),
+  rdfs_individual_of(Timeinterval, knowrob:'TimeInterval'),
+  time_term(Timeinterval , Interval),
+  time_between(T, Interval), !.
+
+time_between(T, [Begin,End]) :-
+  time_between(T, Begin, End).
+
+time_between(T, [Begin]) :-
+  time_later_then(T, [Begin]).
+
 
 %% time_later_then(+T0, +T1)
 % True iff T0 >= T1
@@ -90,7 +144,12 @@ time_between(T, T0, T1) :-
 time_later_then(T0, T1) :-
   time_term(T0, T0_term),
   time_term(T1, T1_term),
-  T1_term =< T0_term.
+  time_later_then_(T0_term, T1_term), !.
+time_later_then_([_], [_])     :- false.
+time_later_then_([T0], [_,T1])   :- T1 =< T0, !.
+time_later_then_([_,T0], [T1])   :- T1 =< T0, !.
+time_later_then_([_,T0], [_,T1]) :- T1 =< T0, !.
+time_later_then_(T0, T1) :- number(T0), number(T1), T1 =< T0, !.
 
 %% time_earlier_then(+T0, +T1)
 % True iff T0 <= T1
@@ -98,7 +157,12 @@ time_later_then(T0, T1) :-
 time_earlier_then(T0, T1) :-
   time_term(T0, T0_term),
   time_term(T1, T1_term),
-  T0_term =< T1_term.
+  time_earlier_then_(T0_term, T1_term), !.
+time_earlier_then_([_], [_])     :- false.
+time_earlier_then_([T0], [_,T1])   :- T0 =< T1, !.
+time_earlier_then_([_,T0], [T1])   :- T0 =< T1, !.
+time_earlier_then_([_,T0], [_,T1]) :- T0 =< T1, !.
+time_earlier_then_(T0, T1) :- number(T0), number(T1), T0 =< T1, !.
 
 %% reduce(+Predicate, +List, +StartValue, -Result).
 % The predicate is first called for the first element of the list, the start value and an intermediate result.
@@ -375,6 +439,7 @@ max_list1([A|Arest], OldMax ,Max) :-
 % Strip the literal(type(..., Value)) and return value if present, else return the original.
 %
 strip_literal_type(literal(type(_, Value)), Value) :- !.
+strip_literal_type(literal(Value), Value) :- !.
 strip_literal_type(Value, Value).
 
 %% property_name(+Relation,-RelationName)
@@ -395,6 +460,106 @@ property_value(Related, RelationValue) :-
   atom(Related), rdf_split_url(_,RelationValue,Related), !.
 property_value(Related, Related).
 
-current_time(T) :-
-  set_prolog_flag(float_format, '%.12g'),
-  get_time(T).
+%% path_delimiter(?Delimiter)
+%
+% Delimiter for filesystem paths.
+%
+path_delimiter('/').
+
+%% path_concat(+Prefix, +Suffix, ?Path)
+%
+% Concatenate path prefix with path suffix.
+% Makes sure that one filesytem delimiter is added time_between
+% @Prefix and @Suffix.
+%
+path_concat(Prefix, Suffix, Path) :-
+  path_delimiter(Delimiter),
+  (( atomic_list_concat(PrefixList, Delimiter, Prefix), last(PrefixList,'') )
+  -> PrefixDelimited = Prefix
+  ;  atomic_list_concat([Prefix,''], Delimiter, PrefixDelimited)
+  ),
+  (  atomic_list_concat([''|_], Delimiter, Suffix)
+  -> atomic_list_concat(['',Suffix], Delimiter, SuffixRelative)
+  ;  SuffixRelative = Suffix
+  ),
+  atom_concat(PrefixDelimited, SuffixRelative, Path).
+
+%% path_split(?Path, ?PathList)
+%
+% Splits @Path at delimiter characters and
+% unifies with splitted path elements @PathList.
+%
+path_split(Path, PathList) :-
+  path_delimiter(Delimiter),
+  atomic_list_concat(PathList, Delimiter, Path).
+
+prolog_pack_path(Path) :-
+  getenv('USER', User),
+  atomic_list_concat(['/home',User,lib,swipl,pack], '/', Path).
+
+%% prolog_pack_install(+PackName, +URL)
+%
+% Download and install a Prolog package.
+% Do nothing if pack is allready installed.
+%
+prolog_pack_install(PackName, URL) :-
+  prolog_pack_path(PackPath),
+  mkdir(PackPath),
+  ( pack_property(delay, version(_));
+    pack_install(PackName, [interactive(false),
+      url(URL),
+      package_directory(PackPath),
+      upgrade(true), silent(true)
+    ]) ), !.
+  
+%% mkdir(+Dir)
+%
+% Create directory at @Dir if it does not yet exist.
+% Also creates all not-existing parent directories.
+%
+mkdir(Dir) :- exists_directory(Dir), !.
+mkdir(Dir) :-
+  path_split(Dir, [Head|Tail]),
+  atom_concat('/', Head, Prefix),
+  mkdir(Prefix, Tail),
+  make_directory(Dir).
+
+mkdir(Path, [Head|Tail]) :-
+  (  exists_directory(Path)
+  -> true
+  ;  make_directory(Path)
+  ),
+  path_concat(Path, Head, ChildPath),
+  mkdir(ChildPath, Tail).
+mkdir(_, []).
+
+
+matrix_rotation(Matrix, [QW,QX,QY,QZ]) :-
+  jpl_list_to_array(Matrix, MatrixArr),
+  jpl_call('org.knowrob.utils.MathUtil', 'matrixToQuaternion', [MatrixArr], QuaternionArr),
+  jpl_array_to_list(QuaternionArr, [QW,QX,QY,QZ]).
+
+matrix_translation(Matrix, [X,Y,Z]) :-
+  nth0( 3, Matrix, X),
+  nth0( 7, Matrix, Y),
+  nth0(11, Matrix, Z).
+
+matrix(Translation, Orientation, Matrix) :-
+  jpl_list_to_array(Translation, TranslationArr),
+  jpl_list_to_array(Orientation, OrientationArr),
+  jpl_call('org.knowrob.utils.MathUtil', 'matrix', [TranslationArr,OrientationArr], MatrixArr),
+  jpl_array_to_list(MatrixArr, Matrix).
+
+matrix_translate([M00, M01, M02, MX,
+                  M10, M11, M12, MY,
+                  M20, M21, M22, MZ,
+                  M30, M31, M32, M33],
+                 [OX,OY,OZ],
+                 [M00, M01, M02, MX_,
+                  M10, M11, M12, MY_,
+                  M20, M21, M22, MZ_,
+                  M30, M31, M32, M33]) :-
+  MX_ is MX + OX,
+  MY_ is MY + OY,
+  MZ_ is MZ + OZ.
+
