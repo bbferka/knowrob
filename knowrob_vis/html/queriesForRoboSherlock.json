@@ -93,12 +93,12 @@
             "q": "detect(['color:black','size:large'],'frame:10')."
         },
 	{
-            "text":"Find the mondamin on the counter top",
-            "q": "detect(['detection:mondamin','location:countertop'],'frame:10')."
+            "text":"Find the pancake_maker on the counter top",
+            "q": "detect(['detection:pancake_maker','location:kitchen_sink_block_counter_top' ],'frame:10')."
         },
 	{
             "text":"Find the spatulas in the drawer",
-            "q": "detect(['detection:spatula','location:drawer'],'frame:10')."
+            "q": "detect(['detection:spatula','location:drawer_sinkblock_upper_open'],'frame:10')."
         },
         {
             "text":"Detect Handles",
@@ -117,8 +117,8 @@
 	        "q":"detect(['size','color'],'frame:5')."		
 	    },
 	    {
-	        "text":"Detect the Pancake Maker",
-	        "q":"detect(['detection:Pancake_maker'],'frame:9')."		
+	        "text":"Detect the Mondamin pancake mix",
+	        "q":"detect(['detection:mondamin'],'frame:9')."		
 	    }, 
         
         {
@@ -130,28 +130,20 @@
 	        "q":"detect(['detection:pancake'],'frame:9')."		
 	    },
         {
-            "text":"Inspect plate for objects on it",
-            "q":"detect(['obj-parts:plate'],'frame:5')."
-        },
-        {
-            "text":"Inspect cup for objects on it",
-            "q":"detect(['obj-parts:cup'],'frame:5')."
-        },
-        {
             "text":"Find all objects that are drinks",
-            "q":"detect(['type:drink'],'frame:5')."
+            "q":"detect(['type:Drink'],'frame:5')."
         },
         {
             "text":"Find all objects that are Food or drink or ingredient",
-            "q":"detect(['type:foodordrinkoringredient'],'frame:8')."
+            "q":"detect(['type:FoodOrDrinkOrIngredient'],'frame:8')."
         },
         {
             "text":"Find all electrical devices",
-            "q":"detect(['type:electrical device'],'frame:10')."
+            "q":"detect(['type:ElectricalDevice'],'frame:10')."
         },
         {
             "text":"Find cooking utensils in drawer",
-            "q":"detect(['type:cooking utensil','location:drawer'],'frame:10')."
+            "q":"detect(['type:CookingUtensil','location:drawer_sinkblock_upper_open'],'frame:10')."
         },
         {
             "text":"",
@@ -167,27 +159,27 @@
         },
 	{
             "text":"Find all objects",
-            "q": "detect(['detection','location:table'],'frame:1')."
+            "q": "detect(['detection','location:chemlab_table'],'frame:1')."
         },
 	{
             "text":"Find the electrical device on the table",
-            "q": "detect(['type:electrical device','location:table'],'frame:1')."
+            "q": "detect(['type:ElectricalDevice','location:chemlab_table'],'frame:1')."
         },
 	{
 	    "text":"Detect container that can hold 100ml of liquid",
-	    "q":"detect(['volume:0.10','type:container'],'frame:1')."		
+	    "q":"detect(['volume:0.10','type:Container','location:chemlab_table'],'frame:1')."		
 	},
         {
 	    "text":"Detect container that can hold 400ml of liquid",
-	    "q":"detect(['volume:0.40','type:container'],'frame:1')."		
+	    "q":"detect(['volume:0.40','type:Container','location:chemlab_table'],'frame:1')."		
 	},
 	{
 	    "text":"Detect bottle that contains acid",
-	    "q":"detect(['detection:bottle','contains:acid'],'frame:1')."
+	    "q":"detect(['detection:bottle','contains:acid','location:chemlab_table'],'frame:1')."
 	},
 	{
 	    "text":"Detect the container that can hold 250ml of substance and has base in it",
-	    "q":"detect(['type:container','volume:0.25','contains:base'],'frame:1')."
+	    "q":"detect(['type:Container','volume:0.25','contains:base','location:chemlab_table'],'frame:1')."
 	}
     ]
 }
