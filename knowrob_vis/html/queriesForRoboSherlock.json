@@ -4,6 +4,10 @@
             "q":"register_ros_package(knowrob_rs_components).",
             "text":"Initialize Context"
         },
+	{
+            "q":"owl_parse('package://iai_semantic_maps/owl/kitchen.owl'),owl_individual_of(A, knowrob:'SemanticEnvironmentMap'),add_object_with_children(A).",
+            "text":"Load semantic map"
+        },
 		{
             "q":"",
             "text":"----- Query Robot Capabilities -----"
