@@ -141,13 +141,15 @@
             },
 		
             center: {
-              paneSelector: "#mjpeg1",
-              minSize: 150
-            },
-            south: {
-              paneSelector: "#mjpeg2",
-              minSize: 150
+              paneSelector: "#mjpeg",
+              minSize: 150,
+              maxSize: 480
             }
+//            south: {
+//              paneSelector: "#mjpeg",
+//              minSize: 150,
+//              maxSize: 480    
+//            }
           }
         }
       });
@@ -200,7 +202,7 @@
   
     <div class="ui-layout-east">
       <div id="designator"></div>
-      <div id="mjpeg1">
+      <div id="mjpeg">
         <img align=center src="http://localhost:8080/stream?topic=/RoboSherlock/result_image" height="100%" />
       </div>
 <!--      <div id="mjpeg2">

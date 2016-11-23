@@ -1516,9 +1516,9 @@ public class MarkerVisualization extends AbstractNodeMain {
 			HashMap<String, Vector<String>> res = PrologInterface.executeQuery(query);
 
 			if (res!=null && res.get("D") != null && res.get("D").size() > 0 && res.get("D").get(0)!=null) {
-				m.getScale().setX(Double.valueOf(OWLThing.removeSingleQuotes(res.get("D").get(0))));
-				m.getScale().setY(Double.valueOf(OWLThing.removeSingleQuotes(res.get("W").get(0))));
-				m.getScale().setZ(Double.valueOf(OWLThing.removeSingleQuotes(res.get("H").get(0))));
+//				m.getScale().setX(Double.valueOf(OWLThing.removeSingleQuotes(res.get("D").get(0))));
+//				m.getScale().setY(Double.valueOf(OWLThing.removeSingleQuotes(res.get("W").get(0))));
+//				m.getScale().setZ(Double.valueOf(OWLThing.removeSingleQuotes(res.get("H").get(0))));
 			} else if(m.getType() != Marker.MESH_RESOURCE) {
 				m.getScale().setX(0.05);
 				m.getScale().setY(0.05);
